@@ -1,0 +1,28 @@
+.ig
+    testrpn.roff	Test input file for Reverse Polish Notation (as used
+			internally by the Infix notation processor).
+
+    Problem: (12 + 6) / 9 + 2
+    Reverse Polish Notation: 12 6 + 9 / 2 +
+    Expected answer: 4
+
+    No skills in Troff are required.
+    Comment lines start with \" and are completely ignored by the compiler.
+    Requests (commands) start with a . (dot) on the first column of a line, and
+    arguments to that command follow after the command's name.
+
+    ``Reverse Polish Notation'' is synonymous with ``Postfix.'' The two terms
+    may be used interchangeably.
+..
+.so rpn.roff \" Import `rpn.roff' -- the reverse polish notation processor.
+.RPNPUSH 12 \" Use the .RPNPUSH request to push token in its argument for
+.RPNPUSH 6 \"  evaluation. Notice that tokens can be operators (+, -, *, /, %),
+.RPNPUSH + \"  or operands (12, 34, 56). Basically, the fields delimited by
+.RPNPUSH 9 \"  whitespace in the antecedent postfix expression all qualify for
+.RPNPUSH / \"  tokens.
+.RPNPUSH 2 \"  As an example, this line registers the 2 operand token, and
+.RPNPUSH + \"  this line registers the + operator token into the machine.
+.RPNPRINT \"   Although postfix input gets evaluated immediately whenever
+\"             possible, the computer is not smart enough to know when you want
+\"             the result printed to screen. This line instructs the computer to
+\"             do just that.

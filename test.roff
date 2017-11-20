@@ -1,7 +1,25 @@
-.so infix.roff
-.INPUSH 2
-.INPUSH +
-.INPUSH 4
-.INPUSH *
-.INPUSH 3
-.INEVAL
+.ig
+    test.roff	Test input file for Infix notation.
+
+    Problem: (12 + 6) / 9 + 2
+    Expected answer: 4
+
+    No skills in Troff are required.
+    Comment lines start with \" and are completely ignored by the compiler.
+    Requests (commands) start with a . (dot) on the first column of a line, and
+    arguments to that command follow after the command's name.
+..
+.so infix.roff \" Import `infix.roff' -- the Infix notation processor.
+.INPUSH ( \"  Use the .INPUSH request to push infix token in its argument for
+.INPUSH 12 \" evaluation. Notice that tokens can be parentheses (), operators
+.INPUSH + \"  (+, -, *, /, %), or operands (12, 34, 56). Basically, the fields
+.INPUSH 6 \"  delimited by whitespace in the antecedent infix expression all
+.INPUSH ) \"  qualify for tokens.
+.INPUSH / \"  As an example, this line registers the / operator token to the
+.INPUSH 9 \"  machine and instructs it to perform division on the expressions
+.INPUSH + \"  surrounding it.
+.INPUSH 2 \"  This lines registers the number 2 operand token to be evaluated.
+.INEVAL \"    This line is extremely important. It tells the computer not to
+\"            expect any more tokens to be registered, and prints the answer to
+\"            the expression. This is analogous to the `=' button on most
+\"            calculators.
