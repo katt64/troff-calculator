@@ -1,0 +1,64 @@
+.ig
+    infix.roff	Infix notation processor
+..
+.so rpn.roff
+.so stacks/beta.roff
+.de PUSHOP
+.ie (\\n(B\\n(Bi)=1 .RPNPUSH -
+.el \{ \
+.	ie (\\n(B\\n(Bi)=2 .RPNPUSH +
+.	el \{ \
+.		ie (\\n(B\\n(Bi)=3 .RPNPUSH /
+.		el \{ \
+.			ie (\\n(B\\n(Bi)=4 .RPNPUSH %
+.			el \{ \
+.				if (\\n(B\\n(Bi)=5 .RPNPUSH *
+\}
+\}
+\}
+\}
+..
+.de THE_SUBROUTINE
+.nr Bi \\n(Bc
+.af Bi A
+.ie (\\n(B\\n(Bi<\\$1):(\\n(Bc=0) .BPUSH \\$1
+.el \{ \
+.	af Bc 1
+.	nr Bi \\n(Bc
+.	af Bi A
+.	PUSHOP
+.	BPOP
+.	BPUSH \\$1
+\}
+.af Bc 1
+..
+.de BCLEAR
+.af Bc 1
+.if \\n(Bc>0 \{ \
+.	nr Bi \\n(Bc
+.	af Bi A
+.	PUSHOP
+.	BPOP
+.	BCLEAR
+\}
+..
+.de INPUSH
+.ie '\\$1'-' .THE_SUBROUTINE 1
+.el \{ \
+.	ie '\\$1'+' .THE_SUBROUTINE 2
+.	el \{ \
+.		ie '\\$1'/' .THE_SUBROUTINE 3
+.		el \{ \
+.			ie '\\$1'%' .THE_SUBROUTINE 4
+.			el \{ \
+.				ie '\\$1'*' .THE_SUBROUTINE 5
+.				el .RPNPUSH \\$1
+\}
+\}
+\}
+\}
+..
+.de INEVAL
+.BCLEAR
+.RPNPRINT
+..

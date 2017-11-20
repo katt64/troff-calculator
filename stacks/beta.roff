@@ -1,0 +1,27 @@
+.ig
+    beta.roff		Beta Stack \(*b
+
+    Effective registers: BA through BZ
+    Stack counter register: Bc
+    Methods: BPUSH BPOP BPSC
+..
+.nr Bc 0
+.af Bc 1
+.de BPUSH
+.if (\\n(Bc>=0)&(\\n(Bc<27) \{ \
+.	nr Bc +1
+.	af Bc A
+.	nr B\\n(Bc \\$1
+.	af Bc 1
+\}
+..
+.de BPOP
+.if (\\n(Bc>0)&(\\n(Bc<27) \{ \
+.	af Bc A
+.	rr B\\n(Bc \\$1
+.	af Bc 1
+.	nr Bc -1
+..
+.de BPSC
+\\n(Bc
+..

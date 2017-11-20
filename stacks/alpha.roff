@@ -1,0 +1,27 @@
+.ig
+    alpha.roff		Alpha Stack \(*a
+
+    Effective registers: AA through AZ
+    Stack counter register: Ac
+    Methods: APUSH APOP APSC
+..
+.nr Ac 0
+.af Ac 1
+.de APUSH
+.if (\\n(Ac>=0)&(\\n(Ac<27) \{ \
+.	nr Ac +1
+.	af Ac A
+.	nr A\\n(Ac \\$1
+.	af Ac 1
+\}
+..
+.de APOP
+.if (\\n(Ac>0)&(\\n(Ac<27) \{ \
+.	af Ac A
+.	rr A\\n(Ac \\$1
+.	af Ac 1
+.	nr Ac -1
+..
+.de APSC
+\\n(Ac
+..

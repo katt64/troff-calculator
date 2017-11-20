@@ -1,0 +1,50 @@
+.ig
+    rpn.roff	Reverse Polish Notation processor
+..
+.so stacks/alpha.roff
+.de REAP
+.af Ac A
+.nr O2 \\n(A\\n(Ac
+.af Ac 1
+.nr Ai \\n(Ac-1
+.af Ai A
+.nr O1 \\n(A\\n(Ai
+.APOP
+.APOP
+..
+.de RPNPUSH
+.ie '\\$1'+' \{ \
+.	REAP
+.	nr Rs \\n(O1+\\n(O2
+\}
+.el \{ \
+.	ie '\\$1'-' \{ \
+.		REAP
+.		nr Rs \\n(O1-\\n(O2
+\}
+.	el \{ \
+.		ie '\\$1'*' \{ \
+.			REAP
+.			nr Rs \\n(O1*\\n(O2
+\}
+.		el \{ \
+.			ie '\\$1'/' \{ \
+.				REAP
+.				nr Rs \\n(O1/\\n(O2
+\}
+.			el \{ \
+.				ie '\\$1'%' \{ \
+.					REAP
+.					nr Rs \\n(O1%\\n(O2
+\}
+.				el .nr Rs \\$1
+\}
+\}
+\}
+\}
+.APUSH \\n(Rs
+..
+.de RPNPRINT
+.if \\n(Ac>1 .tm ERROR: Malformed input expression. Evaluation stack size: \\n(Ac
+\\n(AA
+..
