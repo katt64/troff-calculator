@@ -1,5 +1,8 @@
 .ig
     rpn.roff	Reverse Polish Notation processor
+
+    Stephanie Björk (Katt) <katt64@tuta.io>
+    November 21, 2017
 ..
 .so stacks/alpha.roff
 .de REAP
@@ -45,6 +48,6 @@
 .APUSH \\n(Rs
 ..
 .de RPNPRINT
-.if \\n(Ac>1 .tm ERROR: Malformed input expression. Evaluation stack size: \\n(Ac
+.if \\n(Ac>1 .tm ERROR (rpn.roff): Malformed input expression. Evaluation stack size: \\n(Ac > 1 .
 \\n(AA
 ..

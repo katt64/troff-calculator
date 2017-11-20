@@ -1,5 +1,12 @@
 .ig
-    infix.roff	Infix notation processor
+    infix.roff	Infix notation processor using the Shunting Yard algorithm to
+		internally convert infix expressions into postfix expressions
+		and evaluate therefrom.
+
+		This infix notation processor is EXPERIMENTAL.
+
+    Stephanie Björk (Katt) <katt64@tuta.io>
+    November 21, 2017
 ..
 .so rpn.roff
 .so stacks/beta.roff
@@ -18,7 +25,7 @@
 \}
 \}
 ..
-.de THE_SUBROUTINE
+.de THE_SUBROUTINE \" Ahem... It's... The Subroutine, sir.
 .nr Bi \\n(Bc
 .af Bi A
 .ie (\\n(B\\n(Bi<\\$1):(\\n(Bc=0) .BPUSH \\$1
@@ -42,6 +49,23 @@
 .	BCLEAR
 \}
 ..
+.de BCLEARBRAC
+.af Bc 1
+.nr Bj \\n(Bc
+.af Bj A
+.ie !\\n(B\\n(Bj=6 \{ \
+.	nr Bi \\n(Bc
+.	af Bi A
+.	PUSHOP
+.	BPOP
+.	BCLEARBRAC
+\}
+.el \{
+.	BPOP
+.	nr PC -1
+\}
+..
+.nr PC 0
 .de INPUSH
 .ie '\\$1'-' .THE_SUBROUTINE 1
 .el \{ \
@@ -52,7 +76,19 @@
 .			ie '\\$1'%' .THE_SUBROUTINE 4
 .			el \{ \
 .				ie '\\$1'*' .THE_SUBROUTINE 5
-.				el .RPNPUSH \\$1
+.				el \{ \
+.					ie '\\$1'(' \{ \
+.						BPUSH 6
+.						nr PC +1
+\}
+.					el \{ \
+.						ie '\\$1')' \{ \
+.							BCLEARBRAC
+.							if \\n(PC<0 .tm ERROR (infix.roff): Parity of parentheses is negative: \\n(PC < 0 .
+\}
+.						el .RPNPUSH \\$1
+\}
+\}
 \}
 \}
 \}
