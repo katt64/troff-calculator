@@ -68,19 +68,13 @@
 .	el \{ \
 .		ie '\\$1'%' .THE_SUBROUTINE 3
 .		el \{ \
-.			ie '\\$1'/' .THE_SUBROUTINE 4
+.			ie '\\$1'/' .THE_SUBROUTINE 4 \"         He protecc...
 .			el \{ \
-.				ie '\\$1'*' .THE_SUBROUTINE 5
+.				ie '\\$1'*' .THE_SUBROUTINE 5 \" He attacc...
 .				el \{ \
-.					ie '\\$1'(' \{ \
-.						BPUSH 6 \" He protecc
-.						nr PC +1 \" He attacc
-\} \"                                                But most importantly, he...
+.					ie '\\$1'(' .BPUSH 6 \"  But most importantly, he...
 .					el \{ \
-.						ie '\\$1')' \{ \
-.							BCLEARBRACC
-.							if \\n(PC<0 .tm WARNING (infix.roff): Parity of parentheses is negative: \\n(PC < 0 .
-\}
+.						ie '\\$1')' .BCLEARBRACC
 .						el .RPNPUSH \\$1
 \}
 \}
