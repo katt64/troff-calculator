@@ -53,16 +53,12 @@
 .af Bc 1
 .nr Bj \\n(Bc
 .af Bj A
-.ie \\n(B\\n(Bj<6 \{ \
+.if \\n(B\\n(Bj<6 \{ \
 .	nr Bi \\n(Bc
 .	af Bi A
 .	PUSHOP
 .	BPOP
 .	BCLEARBRACC
-\}
-.el \{ \
-.	BPOP
-.	nr PC -1
 \}
 ..
 .de INPUSH
@@ -95,6 +91,5 @@
 ..
 .de INEVAL
 .BCLEAR
-.if \\n(PC>0 .tm WARNING (infix.roff): Parity of parentheses is postive: \\n(PC > 0 .
 .RPNPRINT
 ..
