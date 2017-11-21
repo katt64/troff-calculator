@@ -49,16 +49,16 @@
 .	BCLEAR
 \}
 ..
-.de BCLEARBRAC
+.de BCLEARBRACC
 .af Bc 1
 .nr Bj \\n(Bc
 .af Bj A
-.ie !\\n(B\\n(Bj=6 \{ \
+.ie \\n(B\\n(Bj<6 \{ \
 .	nr Bi \\n(Bc
 .	af Bi A
 .	PUSHOP
 .	BPOP
-.	BCLEARBRAC
+.	BCLEARBRACC
 \}
 .el \{ \
 .	BPOP
@@ -76,13 +76,13 @@
 .			el \{ \
 .				ie '\\$1'*' .THE_SUBROUTINE 5
 .				el \{ \
-.					ie '\\$1'(' \{ \
+.					ie '\\$1'(' \{ \ \" He protecc
 .						BPUSH 6
-.						nr PC +1
+.						nr PC +1 \" He attacc
 \}
-.					el \{ \
-.						ie '\\$1')' \{ \
-.							BCLEARBRAC
+.					el \{ \ \" But most importantly,
+.						ie '\\$1')' \{ \ \" He...
+.							BCLEARBRACC
 .							if \\n(PC<0 .tm ERROR (infix.roff): Parity of parentheses is negative: \\n(PC < 0 .
 \}
 .						el .RPNPUSH \\$1
