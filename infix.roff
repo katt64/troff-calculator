@@ -15,9 +15,9 @@
 .el \{ \
 .	ie (\\n(B\\n(Bi)=2 .RPNPUSH +
 .	el \{ \
-.		ie (\\n(B\\n(Bi)=3 .RPNPUSH /
+.		ie (\\n(B\\n(Bi)=3 .RPNPUSH %
 .		el \{ \
-.			ie (\\n(B\\n(Bi)=4 .RPNPUSH %
+.			ie (\\n(B\\n(Bi)=4 .RPNPUSH /
 .			el \{ \
 .				if (\\n(B\\n(Bi)=5 .RPNPUSH *
 \}
@@ -60,20 +60,19 @@
 .	BPOP
 .	BCLEARBRAC
 \}
-.el \{
+.el \{ \
 .	BPOP
 .	nr PC -1
 \}
 ..
-.nr PC 0
 .de INPUSH
 .ie '\\$1'-' .THE_SUBROUTINE 1
 .el \{ \
 .	ie '\\$1'+' .THE_SUBROUTINE 2
 .	el \{ \
-.		ie '\\$1'/' .THE_SUBROUTINE 3
+.		ie '\\$1'%' .THE_SUBROUTINE 3
 .		el \{ \
-.			ie '\\$1'%' .THE_SUBROUTINE 4
+.			ie '\\$1'/' .THE_SUBROUTINE 4
 .			el \{ \
 .				ie '\\$1'*' .THE_SUBROUTINE 5
 .				el \{ \
@@ -96,5 +95,6 @@
 ..
 .de INEVAL
 .BCLEAR
+.if \\n(PC>0 .tm WARNING (infix.roff): Parity of parentheses is postive: \\n(PC > 0 .
 .RPNPRINT
 ..
