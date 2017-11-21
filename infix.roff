@@ -76,14 +76,14 @@
 .			el \{ \
 .				ie '\\$1'*' .THE_SUBROUTINE 5
 .				el \{ \
-.					ie '\\$1'(' \{ \ \" He protecc
-.						BPUSH 6
+.					ie '\\$1'(' \{ \
+.						BPUSH 6 \" He protecc
 .						nr PC +1 \" He attacc
-\}
-.					el \{ \ \" But most importantly,
-.						ie '\\$1')' \{ \ \" He...
+\} \"                                                But most importantly, he...
+.					el \{ \
+.						ie '\\$1')' \{ \
 .							BCLEARBRACC
-.							if \\n(PC<0 .tm ERROR (infix.roff): Parity of parentheses is negative: \\n(PC < 0 .
+.							if \\n(PC<0 .tm WARNING (infix.roff): Parity of parentheses is negative: \\n(PC < 0 .
 \}
 .						el .RPNPUSH \\$1
 \}
