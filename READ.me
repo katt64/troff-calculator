@@ -1,0 +1,1553 @@
+.ig
+vim: ft=groff tw=80 wrap sw=4 noet sta
+
+    READ.me		Official documentation for katt64/troff-calculator.
+
+    Requires EQN and the -me macros.
+
+    Stephanie Björk (Katt) <katt64@tuta.io>
+    November 21, 2017
+..
+.he ''%''
+.fo ''katt64/troff-calculator''
+.de $0
+.if !'\\$2'' \{ \
+.(x sh
+\\$2. \\$1
+.)x
+\}
+..
+.de CB
+.(l
+.ft C
+..
+.de CE
+.)l
+.ft
+..
+.ds he .\h'-0.1n'.\h'-0.1n'.
+.tp \" Title page
+.sp |4.3i
+.ce 2
+.ps 20
+katt64/troff-calculator
+.ps
+.sp
+.ps 14
+Stephanie Bj\[:o]rk\**
+.(f
+\** Author's pseudonym.
+.)f
+.ps
+.sp |8i
+.(l M
+Written: November 21, 2017
+Typeset: \*(td
+.)l
+.bp
+.sh 1 "Introduction"
+.pp
+.ul
+troff-calculator\*#
+.(d
+\*#
+.ul
+troff-calculator
+on Github:
+https://github.com/katt64/troff-calculator
+.)d
+is an open-source programming project on Github (refer to the delayed text in
+the Bibliography for the link thither).
+It is a calculator capable of processing input expressions in infix notation and
+Reverse Polish notation\*#
+.(d
+\*#
+.ul
+Reverse Polish notation
+on Wikipedia:
+https://en.wikipedia.org/wiki/Reverse_Polish_notation
+.)d
+as typed by the human, and outputs the evaluation result onto the terminal or
+paper, wheresoever the user expects.
+Evaluation revolves around the general idea of a stack.
+All input pushed into the stack gets evaluated immediately whenever possible, a
+fact demonstrated clearly by the evaluation of Reverse Polish expressions.
+.pp
+The program along with all of its documentation was originally written and
+maintained by Stephanie Bj\[:o]rk\*#
+.(d
+\*#
+.ul
+Stephanie Bj\[:o]rk
+(Personal website):
+https://katt64.github.io
+.)d
+when she was in high school.
+Since it is hosted on Github, anyone can fork or contribute to it whensoever
+they wish.
+.pp
+Generally, calculator programs are easy to make in general-purpose programming
+languages.
+As a matter of fact, most Computer Science exams like the GCSE Computer Science
+exam often instruct the programmer to write a calculator program using one of
+the main-stream programming languages: Python, Pascal, or Java to name a few.
+What sets this calculator program apart is not a unique feature in its
+functionality,\**
+.(f
+\** However, as far as I am concerned, it is the only actively-maintained
+calculator program that can parse Reverse Polish notation.
+.)f
+but rather the fact that the entire calculator program is purely written in
+plain Troff, a language designed to produce beautifully-typeset documents, and
+without any macro packages or outsourcing to other programming languages, not
+even user-friendly wrappers.
+This very fact is made crystal clear by Github's programming language analysis
+\(em 100% Roff.
+.pp
+Undoubtedly, Troff is a remarkably \fIterrible\fP programming language, albeit
+remarkably as versatile.
+This is not unsurprising, for Troff is a typesetting language, not a programming
+language.
+However, it is possible, as proven by this calculator program, to implement a
+few notable algorithms in Troff and coerce it into running them successfully.
+Although it works very well, the means to input and output data can be rather
+unconventional, mostly involving \*(lqline coding,\*(rq and can be extremely
+user-unfriendly.
+.pp
+Nevertheless, this program serves as a demonstration of what can be done in
+Troff, which transcends its core values in typesetting.
+It was fun to write, yet many hurdles always come along the way every now and
+again.
+Since this has proven to be a challenge, things can get unpredictable.
+So, this program is provided to the public domain for educational purposes only,
+and it is not always guaranteed to work as a serious, fully-functional
+calculator although it does try to.
+.sh 2 "Coming from \f(BIrpn-calculator\fP"
+.pp
+You might have noticed that this is not the first calculator of a similar kind
+in Troff.
+If so, you are right; it is not.
+This calculator is based on a predecessor, my previous \fIrpn-calculator\fP\*#
+.(d
+\*#
+.ul
+rpn-calculator
+on Github:
+https://github.com/katt64/rpn-calculator
+.)d
+also in Troff.
+This was rewritten and refactored from scratch to be generally better and more
+efficient than the predecessor.
+New features and improvements have been added, resulting in this current
+incarnation of the calculator.
+New features include:
+.bu
+The ability to parse infix notation.
+The predecessor could only parse Reverse Polish notation, which meant that the
+user had to manually convert their expressions in infix notation to Reverse
+Polish notation.
+.bu
+A practically unlimited input stack, so input expressions can be however long
+they have to be.
+The predecessor had an artificially limited input stack, which meant that the
+input expression could only consist of upto 26 tokens in Reverse Polish
+notation.
+It also meant that the input expression were not evaluate immediately, but were
+delayed until requested for.
+In this implementation, this limit has now been lifted and tokens get evaluated
+immediately whenever possible, making obsolete the request to evaluate input
+tokens at once.
+.pp
+As of today, the predecessor is now officially intentionally abandonned and
+unmaintained, as this current implementation proves to be a lot better and
+cleaner.
+The predecessor is still kept on its own, original Github repository for
+historical and record-keeping purposes.
+All development efforts should be focused on this implementation, not on the
+predecessor anymore.
+.sh 1 "Capabilities"
+.pp
+This calculator's capability is a superset of its predecessor's capabilities.
+It contains the same features, functionality, and naming conventions as in the
+predecessor, but also adds and improves upon many of those.
+.sh 2 "Input tokens stack"
+.pp
+No longer do input tokens get imprisoned within a severely confined 26-slot
+\*(lqinput tokens stack\*(rq and processed at once at the end of the program.
+This means that input expressions can be however long they must be, as it gets
+simplified and evaluated on-the-go.
+However, there is still a limit on how many operands can go unevaluated
+consecutively within the evaluation stack;
+that limit is 26.
+There is an internal and technical why the limit is exactly 26, and it has to do
+with the low-level inner-workings of the implementation of the stack.
+This point will be most prominent in the Troff source file of the stack
+algorithm.
+.pp
+To make this clear, if you use Reverse Polish notation and push 26 operands into
+the evaluation stack with no operators in sight to allow for evaluation, the
+calculator will refuse to accept more operands into its evaluation stack.
+This means that if you push one more operand to make a total of 27 operands
+pushed, you can kiss that operand goodbye, because it simply gets rejected.
+The program will give you no run-time warnings whatsoever about this, so
+consider this paragraph as your only forewarning.
+However, if after 26 operands have been pushed into the evaluation stack and an
+operation is found, the calculator program can now evaluate something in its
+evaluation stack, ergo freeing up 1 space in the stack.
+This means that you can push 26 operands to fill the stack, clear the stack by
+adding them all up with the addition operator, and push another 25, clear the
+stack by adding them all up, and push another 25, and \*(he, going on virtually
+indefinitely as long as the (intermediate) numerical result is machine-size.
+.sh 2 "Numerical computation"
+.pp
+The calculator is capable of numerical evaluation, reading numerical input
+tokens, evaluating them, and outputting the result numerically.
+It is not capable of any form of symbolic computation found in LISP or other
+major Computer Algebra Systems (CAS).
+This means that there is a practical limit as to how large of a number the
+calculator can handle, just like there is a limit of how big an \fCint\fP type
+integer can be in C or JavaScript.
+.pp
+This calculator is capable of working with positive integers, 0, and negative
+integers about equally as well, just like most calculators.
+Unlike most conventional calculators, however, this calculator is not capable of
+handling floating-point arithmetic.
+That simply means that floats and decimals do not work, only signed integers
+including 0 do.
+If an evaluation must result in a decimal, like 11 \(di 3, the result is simply
+truncated with its decimal point stripped off (not rounded) to the greatest
+integer that is less than or equal to the actual result.
+In other words, 11 \(di 3 does not evaluate to 3.66\o'6\(rn', but rather just
+\(lf 11 \(di 3 \(rf \(eq 3.
+This eliminates the hassle of implementing floating point arithmetic that could
+introduce potential roundoff errors as prominent in Fortran \fCREAL\fPs.
+If you need to work with decimals of limited precision, increase their order of
+magnitude and decrease it back to original after working with them.
+.pp
+Integers can be quite big, reaching well over 10\u\s-26\s0\d.
+However, it solely depends on how big Troff's numerical register (\fC.nr\fP) can
+store.
+I do not really know the exact number, for I have not found it in the User's
+manual, but I estimate it to be a lot more than 10\u\s-26\s0\d. :p
+.pp
+Since signed integers are the only supported numerical type, \fIoperands\fP to
+the calculator solely consist of those such integers.
+.sh 2 "Supported Operators"
+.pp
+The following list shows supported operator tokens and the character by which
+they are referred to when parsing them into the calculator. They are listed in
+increasing order of hyperoperations, not precedence in infix notation.
+.bu
+Addition (\fC+\fP)
+.bu
+Subtraction (\fC-\fP)
+.bu
+Multiplication (\fC*\fP)
+.bu
+Integer Division\** (\fC/\fP)
+.(f
+\** Since there is no floating point capability, only integer division is
+supported.
+This applies to other operations whose operands are non-integers.
+.)f
+.bu
+Modulo (\fC%\fP)
+.lp
+For example, if you would like to evaluate 15 \(di 5 \(pl 2 \(mu 3 in infix
+notation,
+you will want to parse it into the program as \fC15 / 5 + 2 * 3\fP.
+If you would like to evaluate the same thing 15 5 \(di 2 3 \(mu \(pl in
+Reverse Polish notation,
+you will want to parse it into the program as \fC15 5 / 2 3 * +\fP.
+.lp
+Exponentiation and tetration are too complicated and thus are not supported.
+.pp
+Modulo is the remainder of a division.
+So, if you have 17 cookies and you want to share them equally among 3
+friends\**,
+.(f
+\** Both operands are co-prime to make this clear.
+.)f
+each of your 3 friends will get 17 \(di 3 \(eq 5 cookies, and the remainder
+nobody can get equally is 17 mod 3 \(eq 2; because 17 \(di 3 \(eq 5 remainder 2.
+.pp
+Since the order of operations is an important concern to infix notation but not
+Reverse Polish notation (hereafter called postfix notation because it is
+shorter), parentheses are also allowed for infix expressions:
+.bu
+Opening parenthesis (
+.bu
+Closing parenthesis )
+.lp
+They can be nested to however many orders you want, but you must remember to
+close them properly or you will get a parity warning.
+In postfix notation, parentheses are not necessary; therefore, they are not
+allowed as operator tokens.
+.sh 2 "Order of operations in infix notation"
+.pp
+One of the hardest parts of writing this calculator is implementing the
+algorithm to parse Infix notation in such a way that operations get done in the
+correct, standard order as taught in middle school.
+This matter does not concern users of Postfix notation, ergo they do not need to
+bat an eye at this subsection.
+Nonetheless, it has been done, and the order of operations are hard-coded and
+trained within the Infix notation processor itself.
+.pp
+The order of operations programmed into the processor is a modified version of
+\fBPEMDAS\fP: Parenthesis, Exponentiation, Multiplication, Division, Addition,
+Subtraction, where operator precedence decreases as a function of each word in
+the acronym.
+However, since exponentiation is not supported but modulo is, the order of
+operations is actually something like \fBPMDMAS\fP: Parenthesis, Multiplication,
+Division, Modulo, Addition, Subtraction.
+All infix operators are left-associative.
+.pp
+In the infix processor, all operators are assigned values that denote the
+precedence of the operators.
+These values are used internally by the processor so it can collate precendences
+numerically.
+The following is a list of operators and their precedence values, ordered from
+highest to lowest precedence.
+Precedence values have a positively linear correlation with actual precendence.
+.(b
+.ta 10P 15P
+Opening parenthesis	6	\fC(\fP
+Multiplication	5	\(mu
+Division	4	\(di
+Modulo	3	mod
+Addition	2	\(pl
+Subtraction	1	\(mi
+.)b
+Note that the order of operations done by the Infix processor respects the
+\fBPMDMAS\fP order \fIexactly\fP as is.
+What this means is that the infix notation, 30 \(di 3 \(mu 2, gets evaluated as
+30 \(di (3 \(mu 2) \(eq 30 \(di 6 \(eq 5; \fInot\fP (30 \(di 3) \(mu 2 \(eq 10
+\(mu 2 \(eq 20.
+So, to get (30 \(di 3) \(mu 2, you must either parse it as: 30 \(mu 2 \(di 3, or
+use parentheses explicitly: (30 \(di 3) \(mu 2.
+Converting operator symbols into machine-parsable ASCII is left as an exercise
+for the reader.
+.sh 1 "Input expressions"
+.pp
+I have been using the words: \fIexpressions\fP (input expressions),
+\fItokens\fP, \fIoperators\fP, and \fIoperands\fP, quite a lot to mean their
+respective and specific things.
+These are the fundamental building pieces for input expressions into the
+calculator.
+To give a picture of how they rank up relative to each other and what they mean,
+a formal definition is given in a slightly modified version of the Backus-Naur
+form in figure 1.
+Note that parentheses are \fIillegal\fP in postfix notation expressions,
+so they only ever matter if you are using infix notation.
+Remove the non-terminals and terminals relating to parentheses when working with
+postfix notation.
+.(z
+.hl
+.ft C
+.so docs/expr.bnf
+.ft
+.sp
+.ce
+Figure 1. Backus-Naur form for input expressions to the calculator
+.hl
+\!.(x f
+\!Figure 1. Backus-Naur form for input expressions to the calculator
+\!.)x
+.)z
+.lp
+From this formal definition, we can derive an `infinite' list of possible input
+expressions that this calculator should be able to handle, although they must be
+formatted correctly and sensibly in infix or postfix notation.
+.pp
+As examples, ((3 \(pl 2) \(mu (5 \(mi 3)) \(di (2 \(pl 1) is correct infix
+notation and follows the formal definition, and 3 2 \(pl 5 3 \(mi \(mu 2 1 \(pl
+\(di is correct posfix notation and follows the formal definition excluding the
+terminals and non-terminals concerning parentheses.
+However, ((3 \(pl 2) \(mu ((5 \(mi 3) \(di (2 \(pl 1) is incorrect infix
+notation, even though it follows the formal definition: parentheses parity is
+postive 1 > 0, i.e. unclosed parentheses.
+3 2.0 \(pl 5e6 3 \(mi \(mu 2 0.9 \(pl \(di is correct postfix notation, but does
+not follow the formal definition: no decimal points or exponential forms are
+allowed in the formal grammar.
+.pp
+To prepare the input expression for the calculator to evaluate, you will
+certainly not be parsing them as expressions separated by spaces as you are used
+to, but rather \*(lqsurrounded\*(rq by certain requests to push them and
+automatically evaluate on-the-fly as possible.
+However, the correspondence between the usual input expression format you are
+used to and the input expression you have to specifically format for the
+calculator still remains 1:1, without any insertions or editing required.
+Details on how to prepare your input expressions for the calculator are
+described in the next section on Operation.
+.sh 1 "Operation"
+.pp
+This section describes proper usage of the program in order to guarantee desired
+results as much as possible.
+The result of evaluation is highly dependent on the correctness of the input
+expression in the first place.
+This section will not deal with that, but rather deal with the more technical
+aspects in gathering all resources required, preparing input, processing it, and
+dealing with output, grouped into their respective sections.
+.pp
+Begining from \(sc 4.2. Input, I will be using an input file throughout the
+sections thereafter as a test case, so that the examples are followable and
+consistent.
+.sh 2 "Prerequisites"
+.pp
+To guarantee a successful run, a few source files are needed and must be fetched
+from the project's Github repository as required using \fCgit clone\fP.
+When fetching those files, store them into one same directory and preserve their
+directory hierarchy.
+Those files are listed below.
+.ip "\fCinfix.roff\fP"
+This is the infix notation processor.
+It uses the shunting-yard algorithm\*#
+.(d
+\*#
+.ul
+Shunting-yard algorithm
+on Wikipedia:
+https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+.)d
+to internally convert the infix expression into a postfix one which then gets
+evaluated internally as postfix.
+In this way, it serves more as a human-friendly wrapper to the postfix notation
+processor (\fCrpn.roff\fP) by automatically converting infix expressions to
+postfix rather than actually working with the infix expression notation
+directly.
+Consequently, not only does it support the 5 operators as does the postfix
+processor, it also supports parentheses, for it is often required by infix
+expressions.
+It contains subroutines that accept tokens from an infix expression one-by-one
+and evaluate them almost on-the-fly, and clear the operator stack (equivalent to
+pressing the
+.bx \(eq
+button on a calculator) and output the result.
+All user-accessible subroutines are named beginning with \fCIN\fP; for example,
+the request to push tokens from the input expression is called with
+\fC.\fP\f(CBIN\fP\fCPUSH\fP.
+You will only ever need this processor if your input expressions are in infix
+notation and you do not want to manually convert them to postfix yourself.
+.ul
+This processor is experimental, and may yield inaccurate results.
+.ip "\fCrpn.roff\fP"
+This is the Reverse Polish notation or Postfix notation processor.
+It uses the generic algorithm to evaluate postfix expressions immediately
+whenever possible as input tokens get read, and it does so using the idea of a
+stack.
+It contains subroutines that accept tokens from a postfix expression one-by-one
+and evaluate them on-the-fly whenever possible, and print the result when there
+are no more tokens to input.
+All user-accessible subroutines are named beginning with \fCRPN\fP; for example,
+the request to push tokens from the input expression is called with
+\fC.\fP\f(CBRPN\fP\fCPUSH\fP.
+Since postfix notation is the heart of all the parsing in this calculator, it is
+a low-level way to use the calculator itself.
+.ip "\fCstacks/alpha.roff\fP"
+This is a minimalist implementation of a stack codenamed \*(lqAlpha\*(rq (\(*a).
+It contains basic subroutines to push items into the stack and pop them off.\**
+.(f
+\** Unlike most stacks, this stack implementation's pop subroutine cannot return
+the value of the item it popped off.
+So, the top of the stack must be processed internally, and only then is the pop
+subroutine used to delete the top item of the stack.
+.)f
+Subroutines and stack slots are referred to internally beginning with an
+\fCA\fP; so the stack counter\**
+.(f
+\** A stack counter counts the current number of items in the stack.
+Incidentially, this means that it can represent the slot ID of the last item in
+the stack, just like array indices.
+.)f
+is called \f(CBA\fP\fCc\fP, the 3rd item of the stack is
+called \f(CBA\fP\fCC\fP, and the subroutine to push is called
+\f(CBA\fP\fCPUSH\fP.
+.ip "\fCstacks/beta.roff\fP"
+This is a minimalist implementation of a stack codenamed \*(lqBeta\*(rq (\(*b).
+It contains basic subroutines to push items into the stack and pop them off.
+Subroutines and stack slots are referred to internally beginning with a \fCB\fP;
+so the stack counter is called \f(CBB\fP\fCc\fP, the 3rd item of the stack is
+called \f(CBB\fP\fCC\fP, and the subroutine to push is called
+\f(CBB\fP\fCPUSH\fP.
+.pp
+I feel the extreme need to mention the most useless file in the repository that
+you will
+.bi "never ever"
+need: \fCLICENSE\fP.
+It does not take much for a 17-year-old girl like me to realize that life is
+just too short to read shit like that.
+Please just give no fucks about it and throw it in the fucking trash if at all
+possible.
+.pp
+Source files may depend on each other.
+The following is a list of dependencies for each of the source files.
+On the left column is the source file's name and on the right are the
+dependencies it has separated by spaces.
+.(l
+.ft C
+infix.roff	rpn.roff stacks/beta.roff
+rpn.roff	stacks/alpha.roff
+.ft
+.)l
+.lp
+Dependencies are recursive, so try to look at it as a recursive tree.
+Stacks are minimal and therefore do not have any dependencies.
+Not all dependencies are needed; for instance, if you do not require Infix
+processing, then you do not need \fCinfix.roff\fP, which then means you do not
+need \fCstacks/beta.roff\fP. All this information can help you determine what
+you really need to fetch from the repository, as not all files are needed.
+.pp
+Source files of a programming language are nothing with the compiler or REPL for
+it.
+The Troff source files need a Troff compiler.
+Most distributions of GNU/Linux and Cygwin will include GNU Troff, a free Troff
+compiler.
+The reason for this is because most manual pages in Linux are typeset using
+Nroff, which uses the same set of tools used by this program.
+This makes this calculator program extremely portable.
+However, most BSDs like OpenBSD do not have GNU Troff installed by default; if
+you do not have GNU Troff installed, you will need to consult your operating
+supervisor's manual on how to install it.
+.sh 2 "Input"
+.pp
+The calculator accepts input expressions and evaluates them appropriately.
+It understands two popular notations: infix notation and postfix notation.
+The choice of which notation to use will directly determine which input
+processor must be used.
+For infix expressions, the tokens are parsed using the \fCinfix.roff\fP
+processor, and for postfix they're parsed using \fCrpn.roff\fP processor.
+.pp
+As a quick start to using the calculator, two files have been provided in the
+repository's root directory: \fCtest.roff\fP and \fCtestrpn.roff\fP as example
+input prepared for evaluation with the infix processor and postfix processor
+respectively.
+Both of the test case files have their own specific over-the-counter
+documentation, so one need no know Troff to start using the calculator.
+.pp
+To give further examples, henceforth consider the input expression (4 \(pl 5
+\(mi 2) \(mu 3 \(pl 2 as our test case.
+Since one can format the expression in either infix or postfix, this subsection
+will be broken down into 2 subsubsections to address each of them.
+.sh 3 "Infix notation"
+.pp
+Consider the input expression (4 \(pl 5 \(mi 2) \(mu 3 \(pl 2.
+The expression is already in infix notation, so one need not convert any further
+to any \*(lqfancy\*(rq notations when preparing it for the infix processor.
+What one needs to do, however, is the easy task of breaking up the expression
+into individual tokens.
+As illustrated by the formal grammar in figure 1, tokens can be operands,
+operators, or parentheses.
+This is easy for a human to do by eye because tokens in an expression are simply
+delimited by whitespace in most general cases.
+Therefore, breaking down the input expression, the tokens are:
+.(l
+.ta 5P
+Parenthesis	(
+Operand	4
+Operator	\(pl
+Operand	5
+Operator	\(mi
+Operand	2
+Parenthesis	)
+Operator	\(mu
+Operand	3
+Operator	\(pl
+Operand	2
+.)l
+.lp
+Notice the direct 1:1 correspondence of our token list above with the original
+input expression.
+Each token is now separated using a new line instead of whitespaces and written
+vertically instead of horizontally as the input expression was.
+Since the calculator can only accept tokens one-by-one and each command
+(request) to register a token into the calculator must be on a line of its own,
+we will have to parse tokens vertically just like this.
+As far as I know, Troff simply does not have the capability to split a string
+macro using whitespaces as delimiters and store each extracted token
+automatically: you are just left with no choice but to do it yourself.
+.pp
+Remember that you must convert each operator to their ASCII equivalents; since
+you cannot trivially type symbols like \(mu or \(di on a US ASCII keyboard, the
+calculator only understands ASCII operator symbols, and nobody in their right
+minds is using a space-cadet keyboard nowadays.
+So, replace \(mu with an asterisk `*' and \(di with a forward slash `/' when
+looking at each operator in the token list.
+For more information on the ASCII equivalents for operators, see \(sc 2.3.
+Supported Operators.
+.pp
+Now that the tokens have been extracted and operators converted, all that
+remains is to intersperse them with requests to register each token into the
+calculator, and top it all off with a request to evaluate them all at once.
+The following is an example input file for the input expression.
+Notice the direct 1:1 correspondence with the token list.
+Requests start with a \fC.\fP (dot) on the first column of the line\**,
+.(f
+\** By the way, requests can also start with a \fC'\fP (single quote).
+Since the requests you will be using are generally user-defined, you do not need
+to worry about the differences.
+.)f
+followed by
+a name, followed by a space, and then a list of argument(s).
+Comments begin with \fC\e"\fP; any text after which is completely ignored by the
+Troff compiler until a newline is found.
+.CB
+\&.so infix.roff \e" Source the infix processor
+\&.INPUSH ( \e"      Register operator (
+\&.INPUSH 4 \e"      Register operand 4
+\&.INPUSH + \e"      Register operator \(pl
+\&.INPUSH 5 \e"      Register operand 5
+\&.INPUSH - \e"      Register operator \(mi
+\&.INPUSH 2 \e"      Register operand 2
+\&.INPUSH ) \e"      Register operator )
+\&.INPUSH * \e"      Register operator \(mu
+\&.INPUSH 3 \e"      Register operand 3
+\&.INPUSH + \e"      Register operator \(pl
+\&.INPUSH 2 \e"      Register operand 2
+\&.INEVAL \e"        Evaluate and print the result.
+.CE
+.lp
+The request \fC.so infix.roff\fP tells Troff to import infix processing
+capabilities from the file \fCinfix.roff\fP.
+It only needs to be called once at the beginning of your input.
+Otherwise, there are two available requests at your disposal:
+.ip "\fC.INPUSH t\fP"
+Accepts 1 required argument: \fCt\fP.
+This request registers the infix token \fCt\fP into the calculator.
+\fCt\fP must be an integer operand or one of the supported operators (see \(sc
+2.3. Supported Operators) or a(n) opening/closing parenthesis.
+Use it as you wish, but your antecedent input must be sensible and correct.
+.ip "\fC.INEVAL\fP"
+Accepts no arguments.
+This request is equivalent to pressing the
+.bx \(eq
+button on a calculator.
+It evaluates the input expression registered into the calculator and outputs the
+evaluation result to the terminal where the user can see.
+.sh 3 "Postfix notation"
+.pp
+Consider the input expression (4 \(pl 5 \(mi 2) \(mu 3 \(pl 2.
+This expression has been given in infix notation.
+.b "Not good!"
+We must convert it to postfix.
+If you do not want to convert such an expression by hand, feel free to use the
+infix processor demonstrated in the previous section; it will internally convert
+your infix expression into postfix automatically.
+However, if you can bother yourself to convert such an expression to postfix,
+this section is for you.
+.pp
+The input converted to postfix notation becomes 4 5 \(pl 2 \(mi 3 \(mu 2 \(pl.
+Once such a conversion is done, all we need to do is to extract the tokens as
+before.
+The following is a list of the tokens in the postfix expression.
+.(l
+.ta 5P
+Operand	4
+Operand	5
+Operator	\(pl
+Operand	2
+Operator	\(mi
+Operand	3
+Operator	\(mu
+Operand	2
+Operator	\(pl
+.)l
+.lp
+The beauty of postfix notation is that the expression is a lot shorter than its
+infix counterpart and it is bereft of parentheses.
+There are now less tokens to pass and it is considerably faster than infix
+notation for the machine to run, although most of us are not used to seeing or
+doing mathematics this way.
+.pp
+All that is left for the user is to convert operators to their ASCII equivalents
+and intersperse the appropriately-converted tokens with requests to register
+tokens into the calculator, and top it all off with one request to output the
+result to the terminal.
+The following is an example input file for the calculator.
+The syntax is exactly the same as before.
+.CB
+\&.so rpn.roff \e" Source postfix processor.
+\&.RPNPUSH 4 \e"   Push operand 4 into evaluation stack.
+\&.RPNPUSH 5 \e"   Push operand 5 into evaluation stack.
+\&.RPNPUSH + \e"   Pop 2 items from stack, \(pl together, push result back.
+\&.RPNPUSH 2 \e"   Push operand 2 into stack.
+\&.RPNPUSH - \e"   Pop 2 from stack, \(mi together, push result back.
+\&.RPNPUSH 3 \e"   Push operand 3 into stack.
+\&.RPNPUSH * \e"   Pop 2 from stack, \(mu together, push result back.
+\&.RPNPUSH 2 \e"   Push operand 2 into stack.
+\&.RPNPUSH + \e"   Pop 2 from stack, \(pl together, push result back.
+\&.RPNPRINT  \e"   Print last item in stack to terminal.
+.CE
+.lp
+The request \fC.so rpn.roff\fP tells Troff to import postfix processing
+capabilities from the source file \fCrpn.roff\fP.
+This request need only be called once at the beginning of your input.
+There are similar requests to register postfix tokens and output the result, but
+they behave drastically differently from the requests for infix notation and
+thus do not have the same names.
+The following 2 requests are available at your disposal:
+.ip "\fC.RPNPUSH t\fP"
+Accepts 1 required argument: \fCt\fP.
+This request registers the postfix token \fCt\fP into the calculator.
+\fCt\fP must be an operand in the form of a signed integer or an operator listed
+in \(sc 2.3. Supported Operators.
+If \fCt\fP is an operand, \fCt\fP gets pushed into the 26-slot evaluation stack,
+but is silently discared if the stack is full.
+If \fCt\fP is an operator, the evaluation stack is popped twice, the two popped
+items get evaluated according to the operator, and the result is pushed back
+onto the evaluation stack.
+.ip "\fC.RPNPRINT\fP"
+Accepts no arguments.
+This request outputs to the terminal the
+.bi "first not last"
+item of the stack with the assumption that it is the final result of the
+evaluation.
+This assumption is usually correct if the evaluation stack counter is 1; i.e.
+there are no orphan operands left unevaluated on stack, a case that can only
+happen if the input expression is malformed.
+.pp
+As you can see, postfix notation makes it extremely clear that when you register
+your tokens into the calculator, they get evaluated immediately whenever
+possible; whereas infix notation is a little more complicated and less
+straightforward, depending on various circumstances.
+This is, because of the simplicity of postfix notation in the eyes of a
+computer.
+Consequently, because of this simplicity, postfix is the heart-and-soul,
+low-level interface of this calculator,\**
+.(f
+\**
+This utterly depends on how you would define \*(lqlow-level\*(rq and how deep
+you are willing to go.
+Yes, within its scope of control, the calculator handles tokens in postfix
+notation at the core, but the actual instruction to evaluate tokens in Troff is
+done using Troff's default infix notation for numerical registers.
+The Troff compiler was likely written in C, which uses infix notation, but the
+lowest-level assembly code for Troff could actually be doing arithmetic in a
+similar way to postfix notation: push two values into two registers, add said
+values together and store them in another register.
+.)f
+as all input expressions, be they in infix or postfix, get converted if
+necessary and evaluated as postfix by this calculator.
+.sh 2 "Processing"
+.pp
+After receiving input, the calculator uses builtin algorithms trained into its
+code written in Troff.
+No part of the logic is outsourced to other programming languages during
+processing, as everything is done in pure Troff, following the philosophy of the
+calculator program.
+The matter of which algorithms are used by the calculator, how it runs, and how
+long it takes to run, is directly correlated to the given input expression and
+the notation in which it is set (infix or postfix).
+This subsection explains how to coerce the Troff compiler (GNU Troff) into
+running the necessary algorithms to evaluate the input expression given by an
+example input described in the same input file from the previous section.
+The algorithms, how they work, and how they are run will also be detailed as
+well.
+Since the calculator has algorithms to process infix and postfix expressions,
+this subsection will be broken down into two subsubsections, describing the
+evaluation of each respective notation systems.
+.pp
+Technically speaking, all processing done by the calculator is based on the
+notion of a stack.
+In fact, all algorithms used by the calculator, big or small, are stack-based.
+Therefore, builtin to the calculator are sufficient algorithms and subroutines
+covering them that implement a minimalist stack that works sufficiently well,
+just enough to fulfill this calculator's purpose.
+The algorithms directly pertaining to the stacks, however, are relatively minute
+and trivial comparing to the other equally-important albeit more-complex
+algorithms involved in expression evaluation.
+Thus, only occasionally will the simpler of algorithms be mentioned here, for
+the author believes that the best explanation for such a simple implementation
+is to look at the source code, which is no more than 20 lines long.
+.sh 3 "A word on stacks"
+.pp
+The way minimalist stacks are implemented in this calculator is that they each
+take up 26 numerical registers in Troff.
+There are failsafes builtin to verify that stacks are not overpushed or
+overpopped beyond 26 or 0 respectively.
+However, there are no failsafes builtin to prevent popping or overwriting to a
+numerical register that has already been used by something else.
+In fact, the only way this stack implementation knows about items that exist in
+the stack is by looking at the cardinality of the stack \(em how many items
+are in the stack.
+It maintains the number by incrementing/decrementing the stack counter register
+when a push/pop routine is called respectively.
+Thus, the cardinality of the stack is stored in the stack counter register.
+.lp
+Now, given the premises that:
+.bu
+Numerical registers can only be 2 characters long.
+.bu
+A numerical register's value can be represented lexicographically.
+The lexicographical representation is A-Z (one character) if the register's
+value is between 1-26 inclusive, but is AA-ZZ (two characters) if the register's
+value is between 27-676 inclusive, and so on.
+.lp
+The format for numerical registers artificially allocated by the stack
+implementation can only follow the form
+.i xy ,
+where \fIx\fP is the uppercase character abbreviation of the stack's name (Alpha
+or Beta), which means one character is already used, and \fIy\fP is the item
+identification code for the stack in uppercase, which leaves 0 characters left.
+If we had allowed identification codes like \fCAA\fP, there would have been 3
+characters in the numerical register, which is not allowed.
+.lp
+This ultimately means that stacks can only have 26 slots maximum, and it is why
+there is a limitation of 26 slots imposed on the evaluation stack.
+.pp
+Take the alpha stack (\(*a) as an example.
+Items in the stack are stored in numerical registers begining with an uppercase
+\fCA\fP for Alpha and the cardinality of the stack is stored in the register
+\fCAc\fP for Alpha cardinality.
+Items in the Alpha stack are stored in numerical registers labelled
+lexicographically from \fCAA\fP to \fCAZ\fP.
+If we had allowed 27 slots in the stack, we would have had to refer to the last
+item as \fCAAA\fP, which would have been an invalid register name for Troff.
+.sh 3 "Infix notation"
+.pp
+Expressions set in infix notation are processed with the infix processor
+\fCinfix.roff\fP.
+The sole algorithm responsible for infix processing is the
+.i "shunting-yard algorithm" ,
+named as such because its behaviour is similar to that of a railroad
+shunting-yard.\**
+.(f
+\**
+I, the programmer, have never actually seen a railroad shunting-yard before, but
+okey\*(he
+.)f
+.pp
+This implementation of the shunting-yard algorithm processes individual tokens
+from an input expression set in infix and converts them to an equivalent
+expression set in postfix.
+This conversion is necessary as all evaluation is done by the calculator in
+postfix, not infix.
+Furthermore, processing tokens in postfix notation is necessary, as it is very
+easy to build programs that parse and work almost directly on postfix notation
+than it is with infix.
+Low-powered machinery can be powerful and versatile because they work with
+postfix, because it is very easy for them to work with.
+Thus, all processing in this calculator is done in its lowest-level form, and
+that form is postfix notation.
+The simplicity of postfix parsing can be seen very clearly:
+there are a lot more lines of code in \fCinfix.roff\fP than there are in
+\fCrpn.roff\fP even though \fCinfix.roff\fP does outsource some of its logic to
+\fCrpn.roff\fP!
+.pp
+Since information on which operations to carry out first is ambiguous in infix
+expressions, the algorithm assumes the
+.b PMDMAS
+order of operations (see \(sc 2.4. Order of operations in infix notation).
+Any part of the default order can be overridden by using parentheses within the
+expression.
+As shown by the formal grammar in figure 1, parentheses count as valid tokens,
+but they are only truly valid if and only if their parity at the end of the
+expression is 0, i.e. they are properly closed.
+Parentheses are supported by the infix processor only, not the postfix
+processor.
+.pp
+Input tokens are registered into the calculator program using the
+user-accessible request \fC.INPUSH\fP, dubbed from
+.i "INFIX PUSH" .
+Tokens are registered, but not necessarily pushed into any specific stack.
+When some tokens are registered, they actually immediately instruct the
+calculator to perform evaluation of a stack, thereby popping more than pushing.
+In nowhere are those such tokens saved within the calculator.
+However, when some tokens are registered, they do cause themselves to be pushed
+into an appropriate stack, depending on what type of token they are, and no
+stacks are popped.
+.pp
+By defintion of the algorithm, the infix processor uses two stacks: stack \(*a
+as the output stack and stack \(*b as the operator stack.
+The \(*a stack is not operated on directly by the processor, but rather through
+the help of the postfix processor.
+The \(*b stack is in complete control of the processor however.
+The \(*a stack holds the postfix operands which are output by the infix
+processor; when infix processing is done or whenever possible, the output
+operands are pushed into this stack.
+The \(*b stack holds the infix operator tokens which await to be registered into
+the postfix processor automatically whensoever the algorithm sees fit, or when
+\fC.INEVAL\fP is issued.
+Not only does \fC.INEVAL\fP print the evaluation to the terminal, but it also
+instructs the calculator that the end of the expression is reached; the next
+paragraph explains \fC.INEVAL\fP in more detail.
+While operand tokens are pushed into the \(*a stack, operators are not.
+Operand and operator tokens output by this algorithm are
+.bi registered
+into the postfix processor, not directly pushed into the \(*a stack.
+.pp
+In a nutshell, the \fC.INEVAL\fP request, dubbed from
+.i "INFIX EVALUATE" ,
+instructs the calculator that the expression has ended and to print the result
+on screen.
+Actually, that is not a complete explanation.
+Infix expressions cannot feasibly be evaluated on-the-fly as can postfix
+expressions.
+On some ocassions, there can be operators left over in the \(*b stack, and
+consequently operands left waiting to be evaluated in the \(*a stack.
+The only way for the calculator to know to expect no more infix tokens and to
+evaluate and print the result for once is for the user to explicitly say that
+the infix expression has come to an end.
+On most conventional calculators, this is done by pressing the
+.bx \(eq
+button.
+The \fC.INEVAL\fP request is analogous to that;
+it empties the \(*b stack and registers (dumps) all the operators from there
+into the postfix processor in the process of popping and registering one at a
+time.
+This gives the opportunity for the postfix processor to evaluate remaining
+operands in the \(*a stack.
+If the expression be formatted well, the postfix processor shall pop the \(*a
+stack just sufficiently enough to leave one final result behind in that stack.
+This remaining item in the stack is the result of the entire evaluation, which
+is then printed by \fC.INEVAL\fP.
+.pp
+Consider the same input expression from the last section: (4 \(pl 5 \(mi 2) \(mu
+3 \(pl 2.
+Assuming the expression has been broken down into tokens and the tokens are
+prepared in an input file to the infix processor like the one in \(sc 4.2.
+Input\(sc1. Infix notation, the following pseudo-description shows how the
+algorithm runs.
+.de SV \" Stack visualization. We'll delete this after this section ends.
+.(l
+\(*a stack:	\\$1
+\(*b stack:	\\$2
+.)l
+..
+.np
+.ul
+The 1\u\s-2st\s0\d token is \fC(\fP \(em an opening parenthesis.
+The token gets registered into the infix processor.
+Since it is an opening parenthesis, it has the highest precedence of all the
+operators it understands.
+Thus, it gets assigned the highest precedence value of 6.
+This gets pushed into the \(*b stack immediately.
+Opening parentheses metaphorically behave as a shield.
+In the \(*b stack, it essentially creates a sandboxed environment for subsequent
+operators after it, whilst protecting existing operators below it; when it has
+done its job, it leaves gracefully, leaving all other operators unscaved.
+That is why we say,
+.q "He protecc, he attacc, but most importantly\*(he he \fCBCLEARBRACC\fP."
+.SV "" "("
+.np
+.ul
+The 2\u\s-2nd\s0\d token is \fC4\fP \(em the operand 4.
+Since this token is a numerical operand, it simply gets registered into the
+postfix processor, which pushes it into the \(*a stack.
+.SV "4" "("
+.np
+.ul
+The 3\u\s-2rd\s0\d token is \fC\(pl\fP \(em the operator \(pl (addition).
+The operator is assigned the precedence of 2 and gets pushed into the \(*b stack
+directly without further ado, because there are no operators already in the \(*b
+stack (except for the parenthesis).
+.SV "4" "( \(pl"
+.np
+.ul
+The 4\u\s-2th\s0\d token is \fC5\fP \(em the operand 5.
+Since this token is a numerical operand, it simply gets registered into the
+postfix processor, which pushes it into the \(*a stack.
+.SV "4 5" "( \(pl"
+.np
+.ul
+The 5\u\s-2th\s0\d token is \fC\(mi\fP \(em the operator \(mi (subtraction).
+The operator is assigned the precedence of 1.
+Unlike the \(pl operator, it does not get pushed into the \(*b stack
+immediately.
+Since the \(pl operator has a higher precedence (2) than the \(mi operator (1),
+the \(pl operator has to leave the \(*b stack and get registered into the
+postfix processor.
+Only then can the \(mi operator be pushed into the \(*b stack to take its place.
+Consequently, as the \(pl operator is registered into the postfix processor, the
+two operands now in the \(*a stack get evaluated with its result pushed back
+into the \(*a stack by the postfix processor.
+.SV "9" "( \(mi"
+.np
+.ul
+The 6\u\s-2th\s0\d token is \fC2\fP \(em the operand 2.
+Since this token is a numerical operand, it simply gets registered into the
+postfix processor, which pushes it into the \(*a stack.
+.SV "9 2" "( \(mi"
+.np
+.ul
+The 7\u\s-2th\s0\d token is \fC)\fP \(em a closing parenthesis.
+The closing parenthesis causes all operators above the first opening parenthesis
+in the \(*b stack to be cleared and registered into the postfix processor;
+the slaughter of operators continues until the first opening parenthesis is
+encountered, at which the onslaughts stop and the first same opening parenthesis
+it encounters is popped from the \(*b stack.
+In this specific case, the only operator to get registered into the postfix
+processor is the \(mi operator from the 5\u\s-2th\s0\d step, which then causes
+the postfix processor to evaluate tokens in the \(*a stack like in the
+5\u\s-2th\s0\d step.
+There are now no operator tokens in the \(*b stack thus far.
+.ul 3
+Unlike opening parentheses, closing parentheses are
+.bi never
+pushed into the \(*b stack or considered operators.
+.SV "7" ""
+.np
+.ul
+The 8\u\s-2th\s0\d token is \fC\(mu\fP \(em the operator \(mu (multiplication).
+The operator is assinged the precedence value of 5, the second highest from the
+opening parenthesis.
+Since there are absolutely no operators already in the \(*b stack, this operator
+gets pushed immediately without further ado.
+.SV "7" "\(mu"
+.np
+.ul
+The 9\u\s-2th\s0\d token is \fC3\fP \(em the operand 3.
+The operand immediately gets registered into the postfix processor, which pushes
+it into the \(*a stack.
+.SV "7 3" "\(mu"
+.np
+.ul
+The 10\u\s-2th\s0\d token is \fC\(pl\fP \(em the operator \(pl (addition).
+The operator gets assigned the precedence value of 2.
+The operator is not immediately pushed into the \(*b stack because the \(mu
+operator from the 8\u\s-2th\s0\d step has a higher precedence (5) than \(pl (2).
+The operator with the higher precedence at the top of the stack must go and get
+registered; only then can \(pl takes its place.
+.SV "21" "\(pl"
+.np
+.ul
+The 11\u\s-2th\s0\d token is \fC2\fP \(em the operand 2.
+The operand is registered into the postfix processor, and into the \(*a stack,
+awaiting an operator to evaluate it.
+In truth, there is a \(pl operator and it is already registered by the
+calculator.
+However, the infix processor is still holding it up in the \(*b stack because it
+assumes the now-false assumption that there are to be more tokens.
+The next step removes this false assumption.
+.SV "21 2" "\(pl"
+.np
+.ul
+The \f(CI.INEVAL\fP request is called.
+When such a request is called, all operators from the \(*b stack are cleared and
+registered one-by-one into the postfix processor at the order which they are
+popped.
+Without any error checking, it does this until the \(*b stack is empty.
+Of course, this requires a loop, which is implemented by primitively recursive
+macro calls in Troff.
+When all the operators are registered into the postfix processor and the \(*b
+stack is emptied, the final step of this step is to print the supposedly-final
+value in the \(*a stack, which is left after all the evaluation done by the
+postfix processor.
+.SV "23" ""
+.pp
+This is a very specific run of the shunting-yard algorithm and is provided only
+as an example.
+For a more general and detailed account of the algorithm, see the Wikipedia
+article about it.\**
+.(f
+\**
+The delayed text should provide this.
+Refer to the Bibliography for the link.
+.)f
+.pp
+It is not advised to register any more tokens into the infix processor after
+\fC.INEVAL\fP has been called.
+.pp
+You may have also noticed that the infix processor does outsource some logic to
+the postfix processor and the stack implementations to handle.
+This is a simple example of the UNIX philosophy:
+.(q
+Write small, simple programs that each do one thing and do it well and put them
+together to perform the desired computation, instead of writing one big
+program that combines all the logic into one monolithic package.
+In this way, the logic of the entire ordered set of programs can be looked at
+and maintained separately, and the logic can also be rearranged and put together
+differently to achieve a different result if so desired later on down the line.
+.)q
+.rm SV
+.sh 3 "Postfix notation"
+.pp
+Expressions set in postfix are processed using the reverse polish notation
+(postfix) processor in \fCrpn.roff\fP.
+The algorithm implemented is a very trivial reverse polish notation parser that
+one can get from the Wikipedia page about it.\**
+.(f
+\**
+The delayed text should provide this too.
+Refer to the Bibliography for the link.
+.)f
+Although it is the heart and soul of the entire calculator, it is extremely
+simple.
+So simple in fact, that \fCrpn.roff\fP is usually approximately half the size of
+\fCinfix.roff\fP.
+Thus, I do not expect that this subsubsection should be as lengthy as the one
+before.
+.pp
+The infix processor requires two stacks for it to really function as it should.
+By contrast, the postfix processor requires only one stack.
+This stack, namely the \(*a stack, could be thought of as a workspace which can
+be used by the postfix processor to store intermediate values to be evaluated
+or/and the (intermediate) result itself;
+it never stores operators, as operators merely serve to instruct the processor
+to evaluate expressions in the stack.
+Because of its function, this stack is often called the
+.q "evaluation stack"
+equivalently.
+Yes, this is the same stack used by \fCinfix.roff\fP, but this stack
+really only stores operand tokens!
+.pp
+Since Troff lacks the means really read and extract tokens from an input string
+like JavaScript can, we must do the work of extracting all the tokens in our
+expressions by ourselves.
+For each token we extract, we must register it with the \fC.RPNPUSH \fP\f(CIt\fP
+request, dubbed from
+.i "Reverse Polish Notation Push" ,
+and keep doing so until the end of your expression.
+Do make sure that your input expression is correct as you \*(lqpush\*(rq them,
+so that you get the results you want without any unpleasant surprises.
+.lp
+The processor also has absolutely no way of knowing if you have finished pushing
+your tokens.
+Once you know you have finished, you must explicitly ask for a result with the
+\fC.RPNPRINT\fP request.
+Notice that it is dubbed from
+.i "Reverse Polish Notation"
+.bi Print .
+Unlike the infix processor, evaluation can be done immediately whenever
+possible, but you just need to ask the calculator to print it explicitly.
+.pp
+Consider the same input expression from the last section: (4 \(pl 5 \(mi 2) \(mu
+3 \(pl 2.
+This expression could be converted by hand to postfix like so:
+4 5 2 \(mi \(pl 3 \(mu 2 \(pl.\**
+.(f
+\**
+Equivalently, it could also be 4 5 \(pl 2 \(mi 3 \(mu 2 \(pl.
+However, we do not assume this ordering in the pseudo-description.
+Remember that order of the tokens is very important when explaining the
+algorithm!
+.)f
+Assuming the converted expression has been broken down into tokens and the
+tokens are prepared in an input file to the processor like the one in \(sc 4.2.
+Input\(sc2. Postfix notation, the following pseudo-description shows how the
+algorithm runs.
+.de SV
+.(l I
+\(*a stack:	\\$1
+.)l
+..
+.np
+.ul
+1\*{st\*} token: 4 \(em the operand 4.
+This gets pushed into the stack immediately.
+In fact,
+.bi all
+operands get pushed into the stack immediately!
+.SV 4
+.np
+.ul
+2\*{nd\*} token: 5 \(em the operand 5.
+It is pushed into the stack.
+.SV "4 5"
+.np
+.ul
+3\*{rd\*} token: 2 \(em the operand 2.
+It is pushed into the stack.
+.SV "4 5 2"
+.np
+.ul
+4\*{th\*} token: \(mi \(em the subtraction operator.
+The last two items of the stacks are popped and stored in two registers,
+\fCO2\fP and \fCO1\fP procedurally in the order at which they are popped.
+The numbers in the two registers are subtracted with each other as \fCO1 \(mi
+O2\fP.
+The result is pushed back into the \(*a stack.
+Since there are more tokens to be read, this is just an intermediate result,
+awaiting to be evaluated again by some other operator.
+.SV "4 3"
+.np
+.ul
+5\*{th\*} token: \(pl \(em the addition operator.
+The last two items of the stacks are popped and stored in two registers,
+\fCO2\fP and \fCO1\fP procedurally in the order at which they are popped.
+The numbers in the two registers are added to each other as \fCO1 \(pl
+O2\fP.
+The result is pushed back into the \(*a stack.
+Since there are more tokens to be read, this is just an intermediate result,
+awaiting to be evaluated again by some other operator.
+.ul 3
+By now, you should have already known all the quirks and caveats of this
+algorithm.
+Subsequent steps will not repeat words.
+.SV "7"
+.np
+.ul
+6\*{th\*} token: 3 \(em the operand 3.
+.SV "7 3"
+.np
+.ul
+7\*{th\*} token: \(mu \(em the multiplication operator.
+.SV "21"
+.np
+.ul
+8\*{th\*} token: 2 \(em the operand 2.
+.SV "21 2"
+.np
+.ul
+9\*{th\*} token: \(pl \(em the addition operator.
+.SV "23"
+.lp
+As you can see, there are less steps taken by the postfix processor doing the
+actual evaluation than there are steps taken by the infix processor converting
+expressions into an ordered set of postfix tokens!
+This generally means that the evaluation in postfix is faster than in infix,
+although their time complexity is about the same at O(n) for \fIn\fP tokens.
+The results we arrive at are the same nonetheless.
+.pp
+See the Wikipedia article on \fIReverse Polish Notation\fP for a more general
+and detailed explanation of the algorithm.
+.rm SV
+.sh 3 "Practical usage"
+.lp
+None.
+.bp
+.lp
+Just kidding.
+.pp
+You may use a
+.sm TROFF
+compiler like
+.sm GROFF
+to compile your input file.
+You should not need to use an typesetting macros (-me, -ms, or -mm), as they are
+only good for typesetting documents.
+In this section, you are assumed to use
+.sm GROFF .
+.pp
+To compile your input file (assuming it is saved to \fCinput.roff\fP) and output
+the evaluation result as a Postscript file (named \fCoutput.ps\fP) that can be
+viewed by Ghostscript or printed\**,
+.(f
+\**
+Think of the trees, bastard.
+By the way, if you are reading this README from physical paper, you also qualify
+for a bastard too!
+.)f
+run:
+.CB
+groff -Tps input.roff > output.ps
+.CE
+.lp
+If you would like a PDF output instead, replace \fC-Tps\fP with \fC-Tpdf\fP.
+That doesn't work on some systems, though, namely Cygwin.
+If you do want it in Postscript, you need not explicitly specify the \fC-Tps\fP
+option.
+.pp
+To compile your input file with the same name and output the result to the
+terminal for convenience, run:
+.CB
+groff -Tutf8 input.roff | head -n 5
+.CE
+.lp
+This will output directly to stdout.
+Without the \fChead\fP utility, the output could exceed your terminal's current
+buffer, for nroff leaves paper-sized blank spaces at currently inconvenient
+places.
+.sh 2 "Output"
+.pp
+Assuming the processing went well (your expressions are syntactically and
+logically correct and no errors/warnings are output to stderr), you should get
+the same results no matter if the same expression is set in infix or postfix.
+.lp
+For example, if we use the same input expression as before, the output to
+Postscript or the terminal should be the result of that expression, which is:
+.CB
+23
+.CE
+on the terminal.
+It should always be 23, regardless of whether you parsed as infix or postfix to
+their respective processors.
+If you think about it, it should be like that.
+The postfix processor does the actual evaluation and the infix processor's
+.i only
+job is to find the equivalent postfix expression for the infix expression.
+This thus leads to the conclusion that:
+.EQ
+(4 + 5 - 2) times 3 + 2 ~=~ 4 ~ 5 ~ 2 - ~ + ~ 3 times 2 + ~=~ 23
+.EN
+.sh 1 "Motivation"
+.pp
+The motivation behind making a Troff calculator was initially more practical
+than esoteric.
+There were actual practical uses for it, but it seemed to prove more esoteric
+later down the line.
+.pp
+As a 17-year-old high school student, there are many things to think about: my
+exams and my academic future in university, to name a few.
+As I kept thinking about those things for a while, I started getting sick, had
+nightmares, anxiety, and some weird depression.
+To kind of shut the voices inside my head up, I tried studying as much as I can
+on many things, really, just to prove that I am better than what my mind has
+led me on to believe; not only that, it also feels a little good being better
+than other people in my class.\**
+.(f
+\**
+Hahahahaaa\*(he
+Uh\*(he
+It was just a joke.
+Jk jk, k?
+hehe.
+.)f
+.pp
+As my dream since childhood has always been to study computer science, be a
+good computer scientist and programmer, and work in the relevant faculties in
+university; I really have to push it.
+I have been trying to be at the bleeding-edge of all my curricula.
+Part of my efforts eminates through as my extensive use of the UNIX-like
+environments (Gentoo, OpenBSD, and similars), and programming weird stuff and
+going into theory.
+.pp
+One of the things in computer science that got me really interested was the
+Reverse Polish Notation.
+It was amazing when I heard of it on Computerphile, and so I looked it up on
+Wikipedia.
+See, it really got me on edge, but I found the lack of calculators and tools
+rather really discouraging.
+I don't want to see myself literally programming in stack-based languages like
+Postscript or
+.sm FORTH ,
+and I do not want to download weird calculator apps on my phone.
+.pp
+So, it was an \*(lqall in or nothing\*(rq situation, as they say.
+As there were no programs that could satisfy me, I decided to program this
+calculator by myself, using the only \*(lqprogramming language\*(rq that I
+actively used at the time: Troff.
+.pp
+.ul
+You know, I really thought at the time that I was out of my mind!
+\*(lqTroff?! Are you serious?\*(rq I exclaimed to myself, \*(lqTroff is a
+typesetting language used to prepare documents,
+.bi not
+an actual programming language!\*(rq
+I sat for a while and agreed to disagree, \*(lqWell, if it is hell, it could
+teach me something about computing.\*(rq
+\*(lqOh really? How?\*(rq \*(lqI will have a much deeper, less abstract
+understanding of computation,\*(rq speaking like the smartest girl in the world,
+.i duh !
+.pp
+And so I spent my holiday programming this thing, I guess.
+At the time, the infix processor wasn't there yet, so we will only talk about
+the postfix processor first.
+It worked way better than I expected!
+So, I tried giving it some test input expressions in postfix.
+It worked spectacularly well, really.
+I made more mistakes checking by hand (2\(en3 times) than it did (0 times)!
+I do have to say that I am bad at mathematics, though.
+.pp
+After a few hours of finally experimenting with the Reverse Polish notation by
+using my program as intended, its non-esoteric use case has gone past and I got
+the hang of it.
+So, I decided to upload the entire original code base as
+\fIkatt64/rpn-calculator\fP on Github.
+I felt I have already gotten used to Reverse Polish just by playing with it for
+several hours, and so I decided to do one better: \*(lqlet's make an infix
+parser in Troff!\*(rq
+Initially, I thought that this was too ambitious a goal, so I really just
+settled on making a parser that converted infix expressions into postfix for the
+already-written RPN processor instead.
+.pp
+All of that got me into the shunting-yard algorithm for a while.
+Then, after experimenting with the algorithm by hand, I implemented it using
+stacks and all that right within Troff, and linked it to the RPN processor I had
+already written.
+To finish it off, I wrote the input source file of some expressions set in infix
+notation.
+Of course, I was anxious that it would not work; I crossed my fingers, eyes, and
+legs, and just hoped for the best as the Troff source file was compiling and the
+Postscript file was loading.
+In disbelief, it totally worked!
+The results for all my test cases were as expected from the program.
+However, literally for days, I really couldn't look at the Troff macros I had
+written; it was utterly complicated, with registers and what-the-hells flying
+every fucking place imaginable and unimaginable, and it was worse than a
+write-only program.
+.pp
+Admittedly, the shunting-yard algorithm implementation was purely estoeric, to
+demonstrate that Troff could very well be Turing-complete.
+Since I knew that this calculator had grown beyond its RPN-usage into an
+esoteric world, I deicded to upload an improved version of the entire code base
+into this new Github repository: \fIkatt64/troff-calculator\fP.
+.q "It's not just an RPN-calculator, it is a real calculator now!"
+I said.
+.pp
+By the way, I did send an email to Professor Brain W. Kernighan about this
+calculator not so long ago.
+I explained what I had done, how I got it to work, how it worked, the motivation
+behind it, and I gave him the link to the code repository on Github, within
+short email of less than 10 paragraphs.
+In the email, I also attached a few pictures of it working and a video
+demonstrating its usage.
+Within a few days' time, he gave me a prompt reply saying, \*(lqIt was fun
+looking at the code,\*(rq and he also said that \*(lq
+.bi "Troff is indeed Turing-complete." \*(rq
+Oh well, that got me off the chair, flying to the ceiling, literally! :p
+Of course, I have the exact email correspondence burried in my inbox
+somewhere, but even if I find it, I will not show it to anyone.
+.pp
+To this day, I still think that I was totally crazily out of my mind for
+programming a calculator in Troff.
+Though, I did learn quite a few new things in computer science, and I would love
+to do the exact same things again.
+.pp
+Having implemented stacks that could be used by many algorithms in Troff, I do
+agree with Professor Brian W. Kernighan that Troff is indeed Turing-complete.
+This also means that it could be possible to implement the Cellular Automaton
+Rule 110, which is said to be Turing-complete.\*#
+.(d
+.nf
+\*# \c
+.i "Rule 110 \(sc The proof of universality" " \c"
+on Wikipedia:
+https://en.wikipedia.org/wiki/Rule_110#The_proof_of_universality
+.fi
+.)d
+.sh 1 "Bugs"
+.pp
+Not all programs are perfect:
+This one is not perfect either.
+There are notably a few bugs that I have seen in the program but I never really
+have the time or effort to get back and fix it, because I just don't feel like
+it matters.
+Below lists a bunch of bugs that I have seen so far.
+Of course, there could be many other bugs out there that I have not seen, only
+waiting to be unpleasantly discovered.
+If you want me to fix these bugs, you might as well send me some love and
+support so I can feel a little more encouraged to fix them.
+.np
+In the implementation of the shunting-yard algorithm in \fCinfix.roff\fP,
+when an operator is registered and its precedence is compared, if the operator
+at the top of the \(*b stack is of greater or equal precedence to the
+newly-registered operator, then the existing operator is popped from stack, but
+only once.
+That is, if there (is|are) still operator(s?) in the \(*b stack of greater or
+equal precedence to the newly-registered operator even after the popping has
+been done, no more operators will be popped and that operator is pushed
+regardless.
+According to the definition of the algorithm, operators should be popped until
+the stack counter is 0 or the last operator in the stack is of lower precedence
+than the newly-registered operator (requires a loop).
+.pp
+If you have found any more bugs, please report them as Issues on the
+repository's Github site.
+From there, the issues will be looked at my maintainers and discussed.
+Please follow adequate etiquette and give as detailed a bug report as possibly
+can, repeating words and sentences a million times if necessary;
+this is so that we can get as detailed a picture of the problem as possible.
+.sh 1 "Todo"
+.pp
+I will try to make the user interface a little bit better.
+At present, tokens need to be registered one request at a time in the input
+file.
+I may create a new request that does all this job; it should scan through its
+argument list and internally register them.
+Then, one need no longer parse tokens line-by-line, but rather word-by-word on
+the same line, which makes for a more convenient and readable input file.
+Here is an example of a future user-accessible request:
+.CB
+\&.RPNPARSE 9 3 / 5 2 + *
+.CE
+.lp
+This will immediately evaluate and print the result of the RPN expression 9 3
+\(di 5 2 \(pl \(mu which must exist on the same line, with tokens separated by
+spaces.
+No existing requests will be removed, as \fC.RPNPARSE\fP essentially acts as a
+user-friendly wrapper and ergo extensively depends on many of those requests.
+A similar request for the infix processor will also be made, called
+\fC.INPARSE\fP.
+.pp
+I will also try to set this README document into reStructuredText by hand if I
+have time.
+As far as I know, no utility has the ability to convert documents set in the
+\fI-me\fP macros into simpler document formats like Markdown or
+reStructuredText, not even Pandoc.
+.sh 1 "Author"
+.lp
+Stephanie Björk (Katt) <katt16777216@gmail.com>
+.lp
+You are welcome to ask any questions, give constructive feedback, or just say
+\*(lqHi\*(rq and talk about how much you love/hate this esoteric project.
+:p
+I usually check my inbox every once in a few days, so make your emails count,
+and please be patient.
+Please do
+.bi not
+send hurtful comments that could do more harm than good to me.
+I've been through quite enough of those things and I definitely do not want to
+have an argument I can't ever seem to win with you or any academic-big-guys.
+.pp
+If it is an emergency and you need to get in touch with me immediately, please
+add me on Snapchat at \fCsuttiwit\fP.
+Unlike email, it could take a mere matter of minutes for me to reply.
+.bi "Do not"
+send nudes or selfies, unless you want to be blocked permanently.
+.bp
+.sh 1 "License"
+.pp
+This calculator is licensed in the
+.i "Do What The Fuck You Want To Public License"
+version 2.
+The entire license is as follows (also see \fCLICENSE\fP in the repository):
+.(b M
+.so LICENSE
+.)b
+.pp
+So, you just do what the fuck you want to, okay?
+If you have a problem with that, it is yours.
+Have a nice day.
+.++ B
+.+c "Bibliography"
+.pd
+.+c
+This
+.sm README
+file was typeset in
+.sm TROFF
+using the \fI-me\fP macros to set the content of the document and the \fIeqn\fP
+preprocessor to set mathematics, on \*(td.
+.++ P
+.+c
+.ft I
+.ce 1000
+.sz 14
+.ps 18
+Dedicated to\*(he
+.ps
+.sp 1i
+My mom
+.q "You never mind me staying up late, writing this documentation till 4 AM the next day during my holidays and weekends."
+.sp 1i
+Bj\[/o]rk
+.q "You saved my life."
+.ce 0
+.sz 10
+.ft R
+.+c "Abstract"
+.pp
+This is the official README file for the entire project,
+\fIkatt64/troff-calculator\fP.
+It aims to document every corner piece and subtleties that exist within the
+project.
+However, no documentation is as good as looking at the code itself, so it is
+advisable that the code be looked at in order to really get the idea of the
+program's operation.
+.pp
+In this README, an accurate description of the project; the program's
+capabilities and limitations; a precise description of the program's operation;
+some notes on the motivation behind such a project; any problems or bugs found
+and how they can be reported; and some notes about the author and licensing will
+be found, as well as many other important things.
+.pp
+For basic, non-technical usage, only \(sc\(sc Operation\(scPrerequisites,
+Operation\(scInput, Operation\(scProcessing\(scPractical usage, and
+Operation\(scOutput need be read, and other more technical material can be
+omitted.
+Refer to the Table of contents for the page numbers thither.
+.+c "Table of contents"
+.uh "Sections"
+.xp sh
+.uh "Figures"
+.xp f
