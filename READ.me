@@ -224,11 +224,11 @@ introduce potential roundoff errors as prominent in Fortran \fCREAL\fPs.
 If you need to work with decimals of limited precision, increase their order of
 magnitude and decrease it back to original after working with them.
 .pp
-Integers can be quite big, reaching well over 10\u\s-26\s0\d.
+Integers can be quite big, reaching well over 10\*{6\*}.
 However, it solely depends on how big Troff's numerical register (\fC.nr\fP) can
 store.
 I do not really know the exact number, for I have not found it in the User's
-manual, but I estimate it to be a lot more than 10\u\s-26\s0\d. :p
+manual, but I estimate it to be a lot more than 10\*{6\*}. :p
 .pp
 Since signed integers are the only supported numerical type, \fIoperands\fP to
 the calculator solely consist of those such integers.
@@ -915,7 +915,7 @@ algorithm runs.
 ..
 .np
 .ul
-The 1\u\s-2st\s0\d token is \fC(\fP \(em an opening parenthesis.
+The 1\*{st\*} token is \fC(\fP \(em an opening parenthesis.
 The token gets registered into the infix processor.
 Since it is an opening parenthesis, it has the highest precedence of all the
 operators it understands.
@@ -930,26 +930,26 @@ That is why we say,
 .SV "" "("
 .np
 .ul
-The 2\u\s-2nd\s0\d token is \fC4\fP \(em the operand 4.
+The 2\*{nd\*} token is \fC4\fP \(em the operand 4.
 Since this token is a numerical operand, it simply gets registered into the
 postfix processor, which pushes it into the \(*a stack.
 .SV "4" "("
 .np
 .ul
-The 3\u\s-2rd\s0\d token is \fC\(pl\fP \(em the operator \(pl (addition).
+The 3\*{rd\*} token is \fC\(pl\fP \(em the operator \(pl (addition).
 The operator is assigned the precedence of 2 and gets pushed into the \(*b stack
 directly without further ado, because there are no operators already in the \(*b
 stack (except for the parenthesis).
 .SV "4" "( \(pl"
 .np
 .ul
-The 4\u\s-2th\s0\d token is \fC5\fP \(em the operand 5.
+The 4\*{th\*} token is \fC5\fP \(em the operand 5.
 Since this token is a numerical operand, it simply gets registered into the
 postfix processor, which pushes it into the \(*a stack.
 .SV "4 5" "( \(pl"
 .np
 .ul
-The 5\u\s-2th\s0\d token is \fC\(mi\fP \(em the operator \(mi (subtraction).
+The 5\*{th\*} token is \fC\(mi\fP \(em the operator \(mi (subtraction).
 The operator is assigned the precedence of 1.
 Unlike the \(pl operator, it does not get pushed into the \(*b stack
 immediately.
@@ -963,22 +963,22 @@ into the \(*a stack by the postfix processor.
 .SV "9" "( \(mi"
 .np
 .ul
-The 6\u\s-2th\s0\d token is \fC2\fP \(em the operand 2.
+The 6\*{th\*} token is \fC2\fP \(em the operand 2.
 Since this token is a numerical operand, it simply gets registered into the
 postfix processor, which pushes it into the \(*a stack.
 .SV "9 2" "( \(mi"
 .np
 .ul
-The 7\u\s-2th\s0\d token is \fC)\fP \(em a closing parenthesis.
+The 7\*{th\*} token is \fC)\fP \(em a closing parenthesis.
 The closing parenthesis causes all operators above the first opening parenthesis
 in the \(*b stack to be cleared and registered into the postfix processor;
 the slaughter of operators continues until the first opening parenthesis is
 encountered, at which the onslaughts stop and the first same opening parenthesis
 it encounters is popped from the \(*b stack.
 In this specific case, the only operator to get registered into the postfix
-processor is the \(mi operator from the 5\u\s-2th\s0\d step, which then causes
+processor is the \(mi operator from the 5\*{th\*} step, which then causes
 the postfix processor to evaluate tokens in the \(*a stack like in the
-5\u\s-2th\s0\d step.
+5\*{th\*} step.
 There are now no operator tokens in the \(*b stack thus far.
 .ul 3
 Unlike opening parentheses, closing parentheses are
@@ -987,7 +987,7 @@ pushed into the \(*b stack or considered operators.
 .SV "7" ""
 .np
 .ul
-The 8\u\s-2th\s0\d token is \fC\(mu\fP \(em the operator \(mu (multiplication).
+The 8\*{th\*} token is \fC\(mu\fP \(em the operator \(mu (multiplication).
 The operator is assinged the precedence value of 5, the second highest from the
 opening parenthesis.
 Since there are absolutely no operators already in the \(*b stack, this operator
@@ -995,22 +995,22 @@ gets pushed immediately without further ado.
 .SV "7" "\(mu"
 .np
 .ul
-The 9\u\s-2th\s0\d token is \fC3\fP \(em the operand 3.
+The 9\*{th\*} token is \fC3\fP \(em the operand 3.
 The operand immediately gets registered into the postfix processor, which pushes
 it into the \(*a stack.
 .SV "7 3" "\(mu"
 .np
 .ul
-The 10\u\s-2th\s0\d token is \fC\(pl\fP \(em the operator \(pl (addition).
+The 10\*{th\*} token is \fC\(pl\fP \(em the operator \(pl (addition).
 The operator gets assigned the precedence value of 2.
 The operator is not immediately pushed into the \(*b stack because the \(mu
-operator from the 8\u\s-2th\s0\d step has a higher precedence (5) than \(pl (2).
+operator from the 8\*{th\*} step has a higher precedence (5) than \(pl (2).
 The operator with the higher precedence at the top of the stack must go and get
 registered; only then can \(pl takes its place.
 .SV "21" "\(pl"
 .np
 .ul
-The 11\u\s-2th\s0\d token is \fC2\fP \(em the operand 2.
+The 11\*{th\*} token is \fC2\fP \(em the operand 2.
 The operand is registered into the postfix processor, and into the \(*a stack,
 awaiting an operator to evaluate it.
 In truth, there is a \(pl operator and it is already registered by the
@@ -1407,8 +1407,7 @@ https://en.wikipedia.org/wiki/Rule_110#The_proof_of_universality
 .)d
 .sh 1 "Bugs"
 .pp
-Not all programs are perfect:
-This one is not perfect either.
+Not all programs are perfect: this one is not perfect either.
 There are notably a few bugs that I have seen in the program but I never really
 have the time or effort to get back and fix it, because I just don't feel like
 it matters.
@@ -1521,7 +1520,7 @@ My mom
 .q "You never mind me staying up late, writing this documentation till 4 AM the next day during my holidays and weekends."
 .sp 1i
 Bj\[/o]rk
-.q "You saved my life."
+.q "You've saved my life."
 .ce 0
 .sz 10
 .ft R
